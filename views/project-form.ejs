@@ -1,0 +1,32 @@
+<%- include('partials/head') %>
+<div class="form-box wide">
+  <h1><%= editing ? 'Edit project' : 'Post a project' %></h1>
+  <% if (error) { %><div class="flash error"><%= error %></div><% } %>
+  <form method="post" action="<%= editing ? '/projects/' + editing.id + '/edit' : '/projects' %>" class="stack">
+    <%- csrfField %>
+    <label>Title <input name="title" value="<%= form.title || '' %>" maxlength="100" required placeholder="Campus food-waste tracker"></label>
+    <label>One-line summary <input name="summary" value="<%= form.summary || '' %>" maxlength="200" required placeholder="What is it, in a sentence?"></label>
+    <label>Description
+      <textarea name="description" rows="8" maxlength="5000" required placeholder="What's the idea? Why does it matter? What have you done so far, and what do you need help with?"><%= form.description || '' %></textarea>
+    </label>
+    <div class="two">
+      <label>Category <select name="category"><% C.CATEGORIES.forEach(function (c) { %><option <%= form.category === c ? 'selected' : '' %>><%= c %></option><% }) %></select></label>
+      <label>Stage <select name="stage"><% C.STAGES.forEach(function (c) { %><option <%= form.stage === c ? 'selected' : '' %>><%= c %></option><% }) %></select></label>
+    </div>
+    <label>Skills you're looking for <input name="skills_needed" value="<%= h.tagList(form.skills_needed).join(', ') %>" placeholder="python, figma, video editing"><span class="hint">Separate with commas. Students can search by these.</span></label>
+    <label>Roles you need <span class="hint">optional</span><input name="roles_needed" value="<%= form.roles_needed || '' %>" maxlength="300" placeholder="1 backend developer, 1 designer"></label>
+    <div class="two">
+      <label>How will the team work? <select name="work_mode"><% C.WORK_MODES.forEach(function (c) { %><option <%= form.work_mode === c ? 'selected' : '' %>><%= c %></option><% }) %></select></label>
+      <label>Area the team will meet near <select name="location"><option value="">Anywhere / not sure</option><% C.AREAS.forEach(function (c) { %><option <%= form.location === c ? 'selected' : '' %>><%= c %></option><% }) %></select></label>
+    </div>
+    <div class="two">
+      <label>Time commitment <select name="commitment"><option value="">Not sure yet</option><% C.COMMITMENTS.forEach(function (c) { %><option <%= form.commitment === c ? 'selected' : '' %>><%= c %></option><% }) %></select></label>
+      <label>Team size (including you) <input type="number" name="team_size" min="2" max="50" value="<%= form.team_size || 4 %>"></label>
+    </div>
+    <div class="row">
+      <button class="btn"><%= editing ? 'Save changes' : 'Post project' %></button>
+      <a href="<%= editing ? '/projects/' + editing.id : '/projects' %>">Cancel</a>
+    </div>
+  </form>
+</div>
+<%- include('partials/foot') %>

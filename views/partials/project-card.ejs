@@ -1,0 +1,19 @@
+<a class="card project-card" href="/projects/<%= p.id %>">
+  <div class="card-top">
+    <span class="pill"><%= p.category %></span>
+    <% if (p.status !== 'open') { %><span class="pill grey">Closed</span>
+    <% } else if (p.member_count >= p.team_size) { %><span class="pill grey">Team full</span>
+    <% } else { %><span class="pill green">Looking for people</span><% } %>
+  </div>
+  <h3><%= p.title %></h3>
+  <p class="muted"><%= p.summary %></p>
+  <% if (p.skills_needed) { %>
+    <div class="tags"><% h.tagList(p.skills_needed).slice(0, 6).forEach(function (t) { %><span class="tag"><%= t %></span><% }) %></div>
+  <% } %>
+  <div class="meta">
+    <span><%= p.owner_name %></span>
+    <span><%= p.member_count %>/<%= p.team_size %> members</span>
+    <span><%= p.work_mode %><%= p.location ? ' · ' + p.location : '' %></span>
+    <span><%= h.timeAgo(p.created_at) %></span>
+  </div>
+</a>

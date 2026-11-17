@@ -1,0 +1,16 @@
+<%- include('partials/head') %>
+<h1>Meetups</h1>
+<p class="muted">Times are campus time (Pacific). Schedule a meetup from any project you're a member of.</p>
+
+<h2>Your upcoming meetups</h2>
+<% if (!mine.length) { %><p class="muted">Nothing scheduled. Join a project or RSVP to an open meetup below.</p><% } %>
+<div class="grid two-col">
+  <% mine.forEach(function (m) { %><%- include('partials/meetup', { m: m, from: 'meetups', canRsvp: true, canDelete: false }) %><% }) %>
+</div>
+
+<h2>Open meetups - anyone can drop in</h2>
+<% if (!open.length) { %><p class="muted">No open meetups right now.</p><% } %>
+<div class="grid two-col">
+  <% open.forEach(function (m) { %><%- include('partials/meetup', { m: m, from: 'meetups', canRsvp: true, canDelete: false }) %><% }) %>
+</div>
+<%- include('partials/foot') %>

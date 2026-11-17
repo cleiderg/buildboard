@@ -1,0 +1,27 @@
+<%# m = meetup row with RSVP info; from = page to return to; canRsvp / canDelete = booleans %>
+<div class="card meetup">
+  <div class="meetup-when"><%= h.fmtWhen(m.starts_at) %></div>
+  <h3><%= m.title %> <% if (m.open_to_all) { %><span class="pill green">Open to anyone</span><% } else { %><span class="pill grey">Team only</span><% } %></h3>
+  <div class="small-text">
+    <strong>Where:</strong> <%= m.place %>
+    <% if (m.project_title) { %> · <a href="/projects/<%= m.project_id %>"><%= m.project_title %></a><% } %>
+  </div>
+  <% if (m.notes) { %><p class="pre"><%= m.notes %></p><% } %>
+  <div class="small-text muted">
+    <%= m.going.length %> going<% if (m.going.length) { %>: <%= m.going.map(function (g) { return g.name; }).join(', ') %><% } %><% if (m.maybe.length) { %> · <%= m.maybe.length %> maybe<% } %>
+  </div>
+  <% if (canRsvp) { %>
+    <form method="post" action="/meetups/<%= m.id %>/rsvp" class="row">
+      <%- csrfField %>
+      <input type="hidden" name="from" value="<%= from %>">
+      <button name="status" value="going" class="btn small <%= m.my_rsvp === 'going' ? '' : 'ghost' %>">Going</button>
+      <button name="status" value="maybe" class="btn small <%= m.my_rsvp === 'maybe' ? '' : 'ghost' %>">Maybe</button>
+      <button name="status" value="no" class="btn small <%= m.my_rsvp === 'no' ? '' : 'ghost' %>">Can't go</button>
+    </form>
+  <% } %>
+  <% if (canDelete) { %>
+    <form method="post" action="/meetups/<%= m.id %>/delete" data-confirm="Cancel this meetup?">
+      <%- csrfField %><button class="link danger">Cancel meetup</button>
+    </form>
+  <% } %>
+</div>

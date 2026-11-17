@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= title %> · <%= C.SITE_NAME %></title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="/">Zot<span>Board</span></a>
+    <nav>
+      <a href="/projects" class="<%= path.startsWith('/projects') ? 'on' : '' %>">Projects</a>
+      <% if (user) { %>
+        <a href="/people" class="<%= path.startsWith('/people') ? 'on' : '' %>">People</a>
+        <a href="/meetups" class="<%= path.startsWith('/meetups') ? 'on' : '' %>">Meetups</a>
+        <a href="/messages" class="<%= path.startsWith('/messages') ? 'on' : '' %>">Messages<% if (unreadMessages) { %><b class="badge"><%= unreadMessages %></b><% } %></a>
+        <a href="/notifications" class="<%= path.startsWith('/notifications') ? 'on' : '' %>">Alerts<% if (unreadNotes) { %><b class="badge"><%= unreadNotes %></b><% } %></a>
+        <a href="/dashboard" class="<%= path.startsWith('/dashboard') ? 'on' : '' %>">Dashboard</a>
+        <a class="btn small" href="/projects/new">+ Post a project</a>
+        <a href="/people/<%= user.id %>" class="avatar small" title="Your profile"><%= h.initials(user.name) %></a>
+        <form method="post" action="/logout" class="inline"><%- csrfField %><button class="link">Log out</button></form>
+      <% } else { %>
+        <a href="/login">Log in</a>
+        <a class="btn small" href="/signup">Sign up</a>
+      <% } %>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+<% if (flash) { %><div class="flash <%= flash.type %>" role="status"><%= flash.msg %></div><% } %>

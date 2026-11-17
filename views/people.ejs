@@ -1,0 +1,17 @@
+<%- include('partials/head') %>
+<h1>People</h1>
+<p class="muted">Find UCI students to build with. People based in your area are listed first.</p>
+<form method="get" action="/people" class="filters card">
+  <input type="search" name="q" value="<%= f.q %>" placeholder="Search name, major, interests…" class="grow">
+  <input name="skill" value="<%= f.skill %>" placeholder="Skill, e.g. figma" aria-label="Skill">
+  <select name="year" aria-label="Year"><option value="">Any year</option><% C.YEARS.forEach(function (c) { %><option <%= f.year === c ? 'selected' : '' %>><%= c %></option><% }) %></select>
+  <select name="location" aria-label="Area"><option value="">Any area</option><% C.AREAS.forEach(function (c) { %><option <%= f.location === c ? 'selected' : '' %>><%= c %></option><% }) %></select>
+  <% if (user.location) { %><label class="check"><input type="checkbox" name="near" value="1" <%= f.near ? 'checked' : '' %>> Near me</label><% } %>
+  <button class="btn">Search</button>
+  <a href="/people" class="small-text">Reset</a>
+</form>
+<% if (!user.location) { %><p class="flash ok">Add where you're based on <a href="/profile/edit">your profile</a> to see who is near you.</p><% } %>
+<p class="muted"><%= total %> student<%= total === 1 ? '' : 's' %> found</p>
+<div class="grid"><% people.forEach(function (person) { %><%- include('partials/person-card', { person: person }) %><% }) %></div>
+<%- include('partials/pager', { base: '/people' }) %>
+<%- include('partials/foot') %>

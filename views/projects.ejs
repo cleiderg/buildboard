@@ -1,0 +1,27 @@
+<%- include('partials/head') %>
+<div class="title-row">
+  <h1>Projects</h1>
+  <a class="btn" href="/projects/new">+ Post a project</a>
+</div>
+
+<form method="get" action="/projects" class="filters card">
+  <input type="search" name="q" value="<%= f.q %>" placeholder="Search ideas, skills, roles…" class="grow">
+  <select name="category" aria-label="Category"><option value="">Any category</option><% C.CATEGORIES.forEach(function (c) { %><option <%= f.category === c ? 'selected' : '' %>><%= c %></option><% }) %></select>
+  <input name="skill" value="<%= f.skill %>" placeholder="Skill needed, e.g. python" aria-label="Skill needed">
+  <select name="mode" aria-label="How the team works"><option value="">In person or remote</option><% C.WORK_MODES.forEach(function (c) { %><option <%= f.mode === c ? 'selected' : '' %>><%= c %></option><% }) %></select>
+  <select name="stage" aria-label="Stage"><option value="">Any stage</option><% C.STAGES.forEach(function (c) { %><option <%= f.stage === c ? 'selected' : '' %>><%= c %></option><% }) %></select>
+  <select name="location" aria-label="Where the team meets"><option value="">Any area</option><% C.AREAS.forEach(function (c) { %><option <%= f.location === c ? 'selected' : '' %>><%= c %></option><% }) %></select>
+  <select name="sort" aria-label="Sort"><option value="">Newest first</option><option value="active" <%= f.sort === 'active' ? 'selected' : '' %>>Recently active</option></select>
+  <% if (user && user.location) { %><label class="check"><input type="checkbox" name="near" value="1" <%= f.near ? 'checked' : '' %>> Near me</label><% } %>
+  <label class="check"><input type="checkbox" name="status" value="all" <%= f.status === 'all' ? 'checked' : '' %>> Include closed</label>
+  <button class="btn">Search</button>
+  <a href="/projects" class="small-text">Reset</a>
+</form>
+
+<p class="muted"><%= total %> project<%= total === 1 ? '' : 's' %> found</p>
+<% if (!projects.length) { %>
+  <div class="center-box"><p>No projects match that search.</p><p><a class="btn" href="/projects/new">Post the first one</a></p></div>
+<% } %>
+<div class="grid"><% projects.forEach(function (p) { %><%- include('partials/project-card', { p: p }) %><% }) %></div>
+<%- include('partials/pager', { base: '/projects' }) %>
+<%- include('partials/foot') %>

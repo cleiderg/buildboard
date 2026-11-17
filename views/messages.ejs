@@ -1,0 +1,39 @@
+<%- include('partials/head') %>
+<h1>Messages</h1>
+<div class="chat">
+  <div class="chat-list card">
+    <% if (!convos.length) { %><p class="muted small-text">No conversations yet. Open someone's profile or a project and hit "Message".</p><% } %>
+    <% convos.forEach(function (c) { %>
+      <a class="list-item <%= other && other.id === c.id ? 'active' : '' %> <%= c.unread ? 'unread' : '' %>" href="/messages/<%= c.id %>">
+        <span class="avatar small"><%= h.initials(c.name) %></span>
+        <span class="grow">
+          <strong><%= c.name %></strong><% if (c.unread) { %> <b class="badge"><%= c.unread %></b><% } %>
+          <span class="muted small-text clip"><%= c.sender_id === user.id ? 'You: ' : '' %><%= c.body %></span>
+        </span>
+      </a>
+    <% }) %>
+  </div>
+  <div class="chat-thread card">
+    <% if (!other) { %>
+      <p class="muted">Pick a conversation.</p>
+    <% } else { %>
+      <h3><a href="/people/<%= other.id %>"><%= other.name %></a> <span class="muted small-text"><%= [other.major, other.year].filter(Boolean).join(' · ') %></span></h3>
+      <div class="bubbles">
+        <% if (!thread.length) { %><p class="muted">Say hi and mention the project you're interested in.</p><% } %>
+        <% thread.forEach(function (m) { %>
+          <div class="bubble <%= m.sender_id === user.id ? 'mine' : '' %>">
+            <p class="pre"><%= m.body %></p>
+            <span class="muted small-text"><%= h.timeAgo(m.created_at) %></span>
+          </div>
+        <% }) %>
+        <span id="end"></span>
+      </div>
+      <form method="post" action="/messages/<%= other.id %>" class="row">
+        <%- csrfField %>
+        <textarea name="body" rows="2" maxlength="2000" required placeholder="Write a message…" class="grow" autofocus></textarea>
+        <button class="btn">Send</button>
+      </form>
+    <% } %>
+  </div>
+</div>
+<%- include('partials/foot') %>

@@ -1,0 +1,24 @@
+<%- include('partials/head') %>
+<div class="form-box">
+  <h1>Join <%= C.SITE_NAME %></h1>
+  <p class="muted">For UCI students. You need an @<%= C.EMAIL_DOMAIN %> email.</p>
+  <% if (error) { %><div class="flash error"><%= error %></div><% } %>
+  <form method="post" action="/signup" class="stack">
+    <%- csrfField %>
+    <label>Name <input name="name" value="<%= form.name || '' %>" maxlength="60" required autofocus></label>
+    <label>UCI email <input type="email" name="email" value="<%= form.email || '' %>" placeholder="panteater@uci.edu" required></label>
+    <label>Password <input type="password" name="password" minlength="8" required><span class="hint">At least 8 characters.</span></label>
+    <label>Major <span class="hint">optional</span><input name="major" value="<%= form.major || '' %>" maxlength="80" placeholder="Computer Science"></label>
+    <div class="two">
+      <label>Year
+        <select name="year"><option value="">—</option><% C.YEARS.forEach(function (y) { %><option <%= form.year === y ? 'selected' : '' %>><%= y %></option><% }) %></select>
+      </label>
+      <label>Where you're based
+        <select name="location"><option value="">—</option><% C.AREAS.forEach(function (a) { %><option <%= form.location === a ? 'selected' : '' %>><%= a %></option><% }) %></select>
+      </label>
+    </div>
+    <button class="btn">Create account</button>
+  </form>
+  <p class="muted">Already have an account? <a href="/login">Log in</a></p>
+</div>
+<%- include('partials/foot') %>

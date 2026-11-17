@@ -1,0 +1,58 @@
+<%- include('partials/head') %>
+<div class="title-row">
+  <h1>Hi, <%= user.name.split(' ')[0] %></h1>
+  <a class="btn" href="/projects/new">+ Post a project</a>
+</div>
+<% if (!user.skills || !user.location) { %>
+  <p class="flash ok">Finish <a href="/profile/edit">your profile</a> (skills and where you're based) to get project suggestions and see students near you.</p>
+<% } %>
+
+<% if (reviewQueue.length) { %>
+  <h2>People who want to join your projects <b class="badge"><%= reviewQueue.length %></b></h2>
+  <div class="list">
+    <% reviewQueue.forEach(function (r) { %>
+      <a class="list-item unread" href="/projects/<%= r.project_id %>#requests">
+        <span><strong><%= r.name %></strong> wants to join <strong><%= r.title %></strong></span>
+        <span class="muted small-text">Review →</span>
+      </a>
+    <% }) %>
+  </div>
+<% } %>
+
+<h2>Your projects</h2>
+<% if (!myProjects.length) { %>
+  <p class="muted">You're not on any projects yet. <a href="/projects">Browse projects</a> or <a href="/projects/new">post your own idea</a>.</p>
+<% } %>
+<div class="grid"><% myProjects.forEach(function (p) { %><%- include('partials/project-card', { p: p }) %><% }) %></div>
+
+<% if (myRequests.length) { %>
+  <h2>Requests you've sent</h2>
+  <div class="list">
+    <% myRequests.forEach(function (r) { %>
+      <a class="list-item" href="/projects/<%= r.project_id %>"><span><%= r.title %></span><span class="muted small-text">Pending · <%= h.timeAgo(r.created_at) %></span></a>
+    <% }) %>
+  </div>
+<% } %>
+
+<h2>Upcoming meetups</h2>
+<% if (!meetups.length) { %><p class="muted">Nothing scheduled. <a href="/meetups">See open meetups</a>.</p><% } %>
+<div class="grid two-col">
+  <% meetups.forEach(function (m) { %><%- include('partials/meetup', { m: m, from: '', canRsvp: false, canDelete: false }) %><% }) %>
+</div>
+
+<% if (suggested.length) { %>
+  <h2>Projects that need your skills</h2>
+  <div class="grid"><% suggested.forEach(function (p) { %><%- include('partials/project-card', { p: p }) %><% }) %></div>
+<% } %>
+
+<% if (nearby.length) { %>
+  <h2>Students near you <span class="muted small-text"><%= user.location %></span></h2>
+  <div class="grid"><% nearby.forEach(function (person) { %><%- include('partials/person-card', { person: person }) %><% }) %></div>
+  <p><a href="/people?near=1">See everyone nearby →</a></p>
+<% } %>
+
+<% if (saved.length) { %>
+  <h2>Saved projects</h2>
+  <div class="grid"><% saved.forEach(function (p) { %><%- include('partials/project-card', { p: p }) %><% }) %></div>
+<% } %>
+<%- include('partials/foot') %>

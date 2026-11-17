@@ -1,0 +1,12 @@
+<%- include('partials/head') %>
+<h1>Notifications</h1>
+<% if (!notes.length) { %><p class="muted">Nothing yet. You'll hear about join requests, replies and meetups here.</p><% } %>
+<div class="list">
+  <% notes.forEach(function (n) { %>
+    <a class="list-item <%= n.is_read ? '' : 'unread' %>" href="<%= n.link %>">
+      <span><%= n.text %></span>
+      <span class="muted small-text"><%= h.timeAgo(n.created_at) %></span>
+    </a>
+  <% }) %>
+</div>
+<%- include('partials/foot') %>

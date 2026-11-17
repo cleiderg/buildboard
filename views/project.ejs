@@ -1,0 +1,184 @@
+<%- include('partials/head') %>
+<% var full = project.member_count >= project.team_size; %>
+<div class="layout">
+  <article>
+    <div class="card-top">
+      <span class="pill"><%= project.category %></span>
+      <span class="pill grey"><%= project.stage %></span>
+      <% if (project.status !== 'open') { %><span class="pill grey">Closed to new members</span>
+      <% } else if (full) { %><span class="pill grey">Team full</span>
+      <% } else { %><span class="pill green">Looking for people</span><% } %>
+    </div>
+    <h1><%= project.title %></h1>
+    <p class="lead"><%= project.summary %></p>
+    <p class="muted small-text">
+      Posted by <% if (user) { %><a href="/people/<%= project.owner_id %>"><%= project.owner_name %></a><% } else { %><%= project.owner_name %><% } %>
+      · <%= h.timeAgo(project.created_at) %>
+    </p>
+
+    <h2>About this project</h2>
+    <p class="pre"><%= project.description %></p>
+
+    <% if (project.skills_needed) { %>
+      <h2>Skills needed</h2>
+      <div class="tags"><% h.tagList(project.skills_needed).forEach(function (t) { %><a class="tag" href="/projects?skill=<%= encodeURIComponent(t) %>"><%= t %></a><% }) %></div>
+    <% } %>
+    <% if (project.roles_needed) { %><h2>Roles needed</h2><p><%= project.roles_needed %></p><% } %>
+
+    <% if (owner) { %>
+      <section id="requests">
+        <h2>Join requests <% if (requests.length) { %><b class="badge"><%= requests.length %></b><% } %></h2>
+        <% if (!requests.length) { %><p class="muted">No pending requests.</p><% } %>
+        <% requests.forEach(function (r) { %>
+          <div class="card">
+            <div class="person-head">
+              <span class="avatar"><%= h.initials(r.name) %></span>
+              <div>
+                <a href="/people/<%= r.user_id %>"><strong><%= r.name %></strong></a>
+                <div class="muted small-text"><%= [r.major, r.year, r.location].filter(Boolean).join(' · ') %></div>
+              </div>
+            </div>
+            <% if (r.message) { %><p class="pre"><%= r.message %></p><% } %>
+            <% if (r.skills) { %><div class="tags"><% h.tagList(r.skills).forEach(function (t) { %><span class="tag"><%= t %></span><% }) %></div><% } %>
+            <form method="post" action="/projects/<%= project.id %>/requests/<%= r.id %>" class="row">
+              <%- csrfField %>
+              <button name="action" value="accept" class="btn small">Accept</button>
+              <button name="action" value="decline" class="btn small ghost">Decline</button>
+              <a href="/messages/<%= r.user_id %>" class="small-text">Message first</a>
+            </form>
+          </div>
+        <% }) %>
+      </section>
+    <% } %>
+
+    <section id="meetups">
+      <h2>Meetups</h2>
+      <% if (!meetups.length) { %><p class="muted">No upcoming meetups<%= member ? ' yet. Schedule the first one below.' : '.' %></p><% } %>
+      <% meetups.forEach(function (m) { %>
+        <%- include('partials/meetup', { m: m, from: '', canRsvp: !!user && (member || m.open_to_all), canDelete: !!user && (owner || m.creator_id === user.id) }) %>
+      <% }) %>
+      <% if (member) { %>
+        <details class="card">
+          <summary>Schedule a meetup</summary>
+          <form method="post" action="/projects/<%= project.id %>/meetups" class="stack">
+            <%- csrfField %>
+            <label>What <input name="title" maxlength="100" required placeholder="Kickoff + brainstorm"></label>
+            <div class="two">
+              <label>When (campus time) <input type="datetime-local" name="starts_at" min="<%= h.nowLocal() %>" required></label>
+              <label>Where <input name="place" maxlength="120" list="spots" required placeholder="Langson Library, 2nd floor">
+                <datalist id="spots"><% C.MEET_SPOTS.forEach(function (s) { %><option value="<%= s %>"><% }) %></datalist>
+              </label>
+            </div>
+            <label>Notes <span class="hint">optional</span><textarea name="notes" rows="2" maxlength="500" placeholder="Bring a laptop. I'll grab a study room."></textarea></label>
+            <label class="check"><input type="checkbox" name="open_to_all" value="1"> Open to anyone interested (shows on the Meetups page so students can drop in)</label>
+            <button class="btn">Schedule</button>
+          </form>
+        </details>
+      <% } %>
+    </section>
+
+    <% if (member) { %>
+      <section id="team">
+        <h2>Team chat <span class="pill grey">Only your team sees this</span></h2>
+        <% if (!teamChat.length) { %><p class="muted">Plan your next steps here.</p><% } %>
+        <% teamChat.forEach(function (c) { %><%- include('partials/comment', { c: c }) %><% }) %>
+        <form method="post" action="/projects/<%= project.id %>/comments" class="stack">
+          <%- csrfField %><input type="hidden" name="team_only" value="1">
+          <textarea name="body" rows="2" maxlength="2000" required placeholder="Message your team…"></textarea>
+          <div><button class="btn small">Send to team</button></div>
+        </form>
+      </section>
+    <% } %>
+
+    <section id="discussion">
+      <h2>Discussion</h2>
+      <% if (!discussion.length) { %><p class="muted">No comments yet. Ask a question or share a thought.</p><% } %>
+      <% discussion.forEach(function (c) { %><%- include('partials/comment', { c: c }) %><% }) %>
+      <% if (user) { %>
+        <form method="post" action="/projects/<%= project.id %>/comments" class="stack">
+          <%- csrfField %>
+          <textarea name="body" rows="3" maxlength="2000" required placeholder="Ask a question or leave feedback…"></textarea>
+          <div><button class="btn small">Post comment</button></div>
+        </form>
+      <% } else { %>
+        <p><a href="/login?next=<%= encodeURIComponent('/projects/' + project.id) %>">Log in</a> to comment.</p>
+      <% } %>
+    </section>
+  </article>
+
+  <aside>
+    <div class="card">
+      <% if (!user) { %>
+        <p>Want in on this project?</p>
+        <a class="btn block" href="/login?next=<%= encodeURIComponent('/projects/' + project.id) %>">Log in to join</a>
+      <% } else if (owner) { %>
+        <p><strong>This is your project.</strong></p>
+        <a class="btn block" href="/projects/<%= project.id %>/edit">Edit project</a>
+        <form method="post" action="/projects/<%= project.id %>/status"><%- csrfField %>
+          <button class="btn ghost block"><%= project.status === 'open' ? 'Close to new members' : 'Reopen to new members' %></button>
+        </form>
+        <form method="post" action="/projects/<%= project.id %>/delete" data-confirm="Delete this project for everyone? This cannot be undone."><%- csrfField %>
+          <button class="link danger">Delete project</button>
+        </form>
+      <% } else if (member) { %>
+        <p><strong>You're on this team.</strong></p>
+        <form method="post" action="/projects/<%= project.id %>/leave" data-confirm="Leave this team?"><%- csrfField %>
+          <button class="btn ghost block">Leave team</button>
+        </form>
+      <% } else if (myRequest && myRequest.status === 'pending') { %>
+        <p><strong>Request sent.</strong> Waiting for <%= project.owner_name %> to answer.</p>
+        <form method="post" action="/projects/<%= project.id %>/withdraw"><%- csrfField %><button class="btn ghost block">Withdraw request</button></form>
+      <% } else if (project.status !== 'open') { %>
+        <p class="muted">This project is not taking new members right now.</p>
+      <% } else { %>
+        <% if (myRequest && myRequest.status === 'declined') { %><p class="muted small-text">Your earlier request was not accepted. You can ask again.</p><% } %>
+        <% if (full) { %><p class="muted small-text">The team is currently full, but you can still ask - the owner may make room.</p><% } %>
+        <form method="post" action="/projects/<%= project.id %>/join" class="stack">
+          <%- csrfField %>
+          <label>Why do you want to join?
+            <textarea name="message" rows="4" maxlength="600" placeholder="What you'd bring, and when you're free to meet."></textarea>
+          </label>
+          <button class="btn block">Ask to join</button>
+        </form>
+      <% } %>
+      <% if (user && !owner) { %>
+        <a class="btn ghost block" href="/messages/<%= project.owner_id %>">Message <%= project.owner_name.split(' ')[0] %></a>
+      <% } %>
+      <% if (user) { %>
+        <form method="post" action="/projects/<%= project.id %>/bookmark"><%- csrfField %>
+          <button class="link"><%= bookmarked ? '★ Saved - remove' : '☆ Save for later' %></button>
+        </form>
+      <% } %>
+    </div>
+
+    <div class="card">
+      <h3>Details</h3>
+      <dl>
+        <dt>Works</dt><dd><%= project.work_mode %></dd>
+        <% if (project.location) { %><dt>Meets near</dt><dd><%= project.location %></dd><% } %>
+        <% if (project.commitment) { %><dt>Commitment</dt><dd><%= project.commitment %></dd><% } %>
+        <dt>Team</dt><dd><%= project.member_count %> of <%= project.team_size %></dd>
+      </dl>
+    </div>
+
+    <div class="card">
+      <h3>Team</h3>
+      <% members.forEach(function (m) { %>
+        <div class="member">
+          <span class="avatar small"><%= h.initials(m.name) %></span>
+          <div class="grow">
+            <% if (user) { %><a href="/people/<%= m.id %>"><%= m.name %></a><% } else { %><%= m.name %><% } %>
+            <% if (m.role === 'owner') { %><span class="pill">Owner</span><% } %>
+            <div class="muted small-text"><%= [m.major, m.year].filter(Boolean).join(' · ') %></div>
+          </div>
+          <% if (owner && m.role !== 'owner') { %>
+            <form method="post" action="/projects/<%= project.id %>/members/<%= m.id %>/remove" data-confirm="Remove <%= m.name %> from the team?"><%- csrfField %>
+              <button class="link danger small-text">Remove</button>
+            </form>
+          <% } %>
+        </div>
+      <% }) %>
+    </div>
+  </aside>
+</div>
+<%- include('partials/foot') %>
