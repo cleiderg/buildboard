@@ -5,13 +5,13 @@
   <form method="post" action="/profile" class="stack">
     <%- csrfField %>
     <label>Name <input name="name" value="<%= form.name || '' %>" maxlength="60" required></label>
-    <label>Major <input name="major" value="<%= form.major || '' %>" maxlength="80"></label>
+    <label>What you do <input placeholder="Backend developer, CS student, hobbyist…" name="headline" value="<%= form.headline || '' %>" maxlength="80"></label>
     <div class="two">
-      <label>Year <select name="year"><option value="">—</option><% C.YEARS.forEach(function (y) { %><option <%= form.year === y ? 'selected' : '' %>><%= y %></option><% }) %></select></label>
-      <label>Where you're based <select name="location"><option value="">—</option><% C.AREAS.forEach(function (a) { %><option <%= form.location === a ? 'selected' : '' %>><%= a %></option><% }) %></select><span class="hint">Used to show you students and projects nearby.</span></label>
+      <label>Experience level <select name="level"><option value="">—</option><% C.LEVELS.forEach(function (y) { %><option <%= form.level === y ? 'selected' : '' %>><%= y %></option><% }) %></select></label>
+      <label>City or area <input name="location" value="<%= form.location || '' %>" maxlength="60" placeholder="Austin, TX"><span class="hint">Used to show you people and projects nearby. Type it the way locals do, e.g. "Austin, TX".</span></label>
     </div>
-    <label>Skills <input name="skills" value="<%= h.tagList(form.skills).join(', ') %>" placeholder="python, react, cad, video editing"><span class="hint">Separate with commas. Project owners search by these.</span></label>
-    <label>Interests <input name="interests" value="<%= h.tagList(form.interests).join(', ') %>" placeholder="robotics, climate, game design"></label>
+    <label>Skills <input name="skills" value="<%= h.tagList(form.skills).join(', ') %>" placeholder="python, react, rust, pcb design"><span class="hint">Separate with commas. Project owners search by these.</span></label>
+    <label>Interests <input name="interests" value="<%= h.tagList(form.interests).join(', ') %>" placeholder="robotics, open source, game dev"></label>
     <label>About you <textarea name="bio" rows="4" maxlength="1000" placeholder="What do you like to build? What are you hoping to work on?"><%= form.bio || '' %></textarea></label>
     <label>When you're usually free to meet <input name="availability" value="<%= form.availability || '' %>" maxlength="120" placeholder="Weekday evenings, Saturday afternoons"></label>
     <label>Link <span class="hint">GitHub, portfolio, LinkedIn…</span><input name="link" value="<%= form.link || '' %>" maxlength="200" placeholder="https://github.com/you"></label>

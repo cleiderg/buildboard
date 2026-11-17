@@ -17,7 +17,7 @@
     <% if (!other) { %>
       <p class="muted">Pick a conversation.</p>
     <% } else { %>
-      <h3><a href="/people/<%= other.id %>"><%= other.name %></a> <span class="muted small-text"><%= [other.major, other.year].filter(Boolean).join(' · ') %></span></h3>
+      <h3><a href="/people/<%= other.id %>"><%= other.name %></a> <span class="muted small-text"><%= [other.headline, other.level].filter(Boolean).join(' · ') %></span></h3>
       <div class="bubbles">
         <% if (!thread.length) { %><p class="muted">Say hi and mention the project you're interested in.</p><% } %>
         <% thread.forEach(function (m) { %>

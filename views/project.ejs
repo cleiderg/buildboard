@@ -35,7 +35,7 @@
               <span class="avatar"><%= h.initials(r.name) %></span>
               <div>
                 <a href="/people/<%= r.user_id %>"><strong><%= r.name %></strong></a>
-                <div class="muted small-text"><%= [r.major, r.year, r.location].filter(Boolean).join(' · ') %></div>
+                <div class="muted small-text"><%= [r.headline, r.level, r.location].filter(Boolean).join(' · ') %></div>
               </div>
             </div>
             <% if (r.message) { %><p class="pre"><%= r.message %></p><% } %>
@@ -64,13 +64,13 @@
             <%- csrfField %>
             <label>What <input name="title" maxlength="100" required placeholder="Kickoff + brainstorm"></label>
             <div class="two">
-              <label>When (campus time) <input type="datetime-local" name="starts_at" min="<%= h.nowLocal() %>" required></label>
-              <label>Where <input name="place" maxlength="120" list="spots" required placeholder="Langson Library, 2nd floor">
+              <label>When (local time) <input type="datetime-local" name="starts_at" required></label>
+              <label>Where <input name="place" maxlength="120" list="spots" required placeholder="Coffee shop on Main St">
                 <datalist id="spots"><% C.MEET_SPOTS.forEach(function (s) { %><option value="<%= s %>"><% }) %></datalist>
               </label>
             </div>
-            <label>Notes <span class="hint">optional</span><textarea name="notes" rows="2" maxlength="500" placeholder="Bring a laptop. I'll grab a study room."></textarea></label>
-            <label class="check"><input type="checkbox" name="open_to_all" value="1"> Open to anyone interested (shows on the Meetups page so students can drop in)</label>
+            <label>Notes <span class="hint">optional</span><textarea name="notes" rows="2" maxlength="500" placeholder="Bring a laptop. I'll grab a table."></textarea></label>
+            <label class="check"><input type="checkbox" name="open_to_all" value="1"> Open to anyone interested (shows on the Meetups page so people can drop in)</label>
             <button class="btn">Schedule</button>
           </form>
         </details>
@@ -169,7 +169,7 @@
           <div class="grow">
             <% if (user) { %><a href="/people/<%= m.id %>"><%= m.name %></a><% } else { %><%= m.name %><% } %>
             <% if (m.role === 'owner') { %><span class="pill">Owner</span><% } %>
-            <div class="muted small-text"><%= [m.major, m.year].filter(Boolean).join(' · ') %></div>
+            <div class="muted small-text"><%= [m.headline, m.level].filter(Boolean).join(' · ') %></div>
           </div>
           <% if (owner && m.role !== 'owner') { %>
             <form method="post" action="/projects/<%= project.id %>/members/<%= m.id %>/remove" data-confirm="Remove <%= m.name %> from the team?"><%- csrfField %>

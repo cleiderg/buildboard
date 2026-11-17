@@ -5,7 +5,7 @@
       <span class="avatar large"><%= h.initials(person.name) %></span>
       <div>
         <h1><%= person.name %></h1>
-        <div class="muted"><%= [person.major, person.year].filter(Boolean).join(' · ') || 'UCI student' %></div>
+        <div class="muted"><%= [person.headline, person.level].filter(Boolean).join(' · ') || 'Member' %></div>
       </div>
     </div>
     <% if (person.bio) { %><h2>About</h2><p class="pre"><%= person.bio %></p><% } %>
@@ -23,7 +23,7 @@
         <a class="btn block" href="/messages/<%= person.id %>">Message <%= person.name.split(' ')[0] %></a>
       <% } %>
       <dl>
-        <% if (person.location) { %><dt>Based in</dt><dd><%= person.location %><% if (person.id !== user.id && user.location === person.location) { %> <span class="pill green">Near you</span><% } %></dd><% } %>
+        <% if (person.location) { %><dt>Based in</dt><dd><%= person.location %><% if (person.id !== user.id && h.sameArea(user.location, person.location)) { %> <span class="pill green">Near you</span><% } %></dd><% } %>
         <% if (person.availability) { %><dt>Free to meet</dt><dd><%= person.availability %></dd><% } %>
         <% if (person.link) { %><dt>Link</dt><dd><a href="<%= person.link %>" rel="noopener nofollow" target="_blank"><%= person.link.replace(/^https?:\/\//, '').slice(0, 40) %></a></dd><% } %>
         <dt>Joined</dt><dd><%= h.timeAgo(person.created_at) %></dd>

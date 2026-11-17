@@ -1,5 +1,4 @@
-// ZotBoard - a project message board for UCI students.
-process.env.TZ = process.env.TZ || 'America/Los_Angeles'; // meetup times are campus time
+// BuildBoard - a message board for finding people to build technical projects with.
 
 const express = require('express');
 const path = require('path');

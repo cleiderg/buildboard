@@ -15,8 +15,8 @@ CREATE TABLE IF NOT EXISTS users (
   email         TEXT NOT NULL UNIQUE,
   password_hash TEXT NOT NULL,
   name          TEXT NOT NULL,
-  major         TEXT NOT NULL DEFAULT '',
-  year          TEXT NOT NULL DEFAULT '',
+  headline         TEXT NOT NULL DEFAULT '',
+  level          TEXT NOT NULL DEFAULT '',
   location      TEXT NOT NULL DEFAULT '',
   bio           TEXT NOT NULL DEFAULT '',
   skills        TEXT NOT NULL DEFAULT '',
@@ -86,7 +86,7 @@ CREATE TABLE IF NOT EXISTS meetups (
   creator_id  INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   title       TEXT NOT NULL,
   place       TEXT NOT NULL,
-  starts_at   TEXT NOT NULL,           -- local campus time, 'YYYY-MM-DDTHH:MM'
+  starts_at   TEXT NOT NULL,           -- local time of the meetup, 'YYYY-MM-DDTHH:MM'
   notes       TEXT NOT NULL DEFAULT '',
   open_to_all INTEGER NOT NULL DEFAULT 0,
   created_at  INTEGER NOT NULL

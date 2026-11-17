@@ -5,7 +5,7 @@
   <form method="post" action="/login" class="stack">
     <%- csrfField %>
     <input type="hidden" name="next" value="<%= next %>">
-    <label>UCI email <input type="email" name="email" value="<%= email %>" placeholder="panteater@uci.edu" required autofocus></label>
+    <label>Email <input type="email" name="email" value="<%= email %>" placeholder="you@example.com" required autofocus></label>
     <label>Password <input type="password" name="password" required></label>
     <button class="btn">Log in</button>
   </form>

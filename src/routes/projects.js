@@ -17,7 +17,7 @@ function projectInput(body) {
     category: pick(body.category, C.CATEGORIES, 'Other'),
     stage: pick(body.stage, C.STAGES, C.STAGES[0]),
     work_mode: pick(body.work_mode, C.WORK_MODES, C.WORK_MODES[0]),
-    location: pick(body.location, C.AREAS, ''),
+    location: clean(body.location, 60).replace(/\s+/g, ' '),
     skills_needed: tags(body.skills_needed),
     roles_needed: clean(body.roles_needed, 300),
     commitment: pick(body.commitment, C.COMMITMENTS, ''),
@@ -58,7 +58,7 @@ router.get('/projects', (req, res) => {
     q: clean(req.query.q, 80),
     category: pick(req.query.category, C.CATEGORIES, ''),
     skill: clean(req.query.skill, 30).toLowerCase(),
-    location: pick(req.query.location, C.AREAS, ''),
+    location: clean(req.query.location, 60),
     mode: pick(req.query.mode, C.WORK_MODES, ''),
     stage: pick(req.query.stage, C.STAGES, ''),
     status: req.query.status === 'all' ? 'all' : '',
@@ -75,11 +75,11 @@ router.get('/projects', (req, res) => {
   }
   if (f.category) { where.push('p.category = ?'); params.push(f.category); }
   if (f.skill) { where.push(`(',' || p.skills_needed || ',') LIKE ? ESCAPE '\\'`); params.push('%,' + escLike(f.skill) + ',%'); }
-  if (f.location) { where.push('p.location = ?'); params.push(f.location); }
+  if (f.location) { where.push("lower(p.location) LIKE ? ESCAPE '\\'"); params.push('%' + escLike(f.location.toLowerCase()) + '%'); }
   if (f.mode) { where.push('p.work_mode = ?'); params.push(f.mode); }
   if (f.stage) { where.push('p.stage = ?'); params.push(f.stage); }
   if (f.status !== 'all') where.push("p.status = 'open'");
-  if (f.near) { where.push('(p.location = ? OR u.location = ?)'); params.push(req.user.location, req.user.location); }
+  if (f.near) { where.push('(lower(p.location) = lower(?) OR lower(u.location) = lower(?))'); params.push(req.user.location, req.user.location); }
 
   const whereSql = where.length ? 'WHERE ' + where.join(' AND ') : '';
   const total = get(`SELECT COUNT(*) AS n FROM projects p JOIN users u ON u.id = p.owner_id ${whereSql}`, ...params).n;
@@ -166,14 +166,14 @@ router.get('/projects/:id', (req, res) => {
   const owner = !!me && project.owner_id === me.id;
 
   const members = all(
-    `SELECT u.id, u.name, u.major, u.year, m.role FROM memberships m JOIN users u ON u.id = m.user_id
+    `SELECT u.id, u.name, u.headline, u.level, m.role FROM memberships m JOIN users u ON u.id = m.user_id
      WHERE m.project_id = ? ORDER BY m.role = 'owner' DESC, m.joined_at`,
     project.id
   );
   const myRequest = me ? get('SELECT * FROM join_requests WHERE project_id = ? AND user_id = ?', project.id, me.id) : null;
   const requests = owner
     ? all(
-        `SELECT r.*, u.name, u.major, u.year, u.skills, u.location FROM join_requests r JOIN users u ON u.id = r.user_id
+        `SELECT r.*, u.name, u.headline, u.level, u.skills, u.location FROM join_requests r JOIN users u ON u.id = r.user_id
          WHERE r.project_id = ? AND r.status = 'pending' ORDER BY r.created_at`,
         project.id
       )

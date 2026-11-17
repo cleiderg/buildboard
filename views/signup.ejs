@@ -1,20 +1,20 @@
 <%- include('partials/head') %>
 <div class="form-box">
   <h1>Join <%= C.SITE_NAME %></h1>
-  <p class="muted">For UCI students. You need an @<%= C.EMAIL_DOMAIN %> email.</p>
+  <p class="muted">Open to anyone who wants to work on technical projects.</p>
   <% if (error) { %><div class="flash error"><%= error %></div><% } %>
   <form method="post" action="/signup" class="stack">
     <%- csrfField %>
     <label>Name <input name="name" value="<%= form.name || '' %>" maxlength="60" required autofocus></label>
-    <label>UCI email <input type="email" name="email" value="<%= form.email || '' %>" placeholder="panteater@uci.edu" required></label>
+    <label>Email <input type="email" name="email" value="<%= form.email || '' %>" placeholder="you@example.com" required></label>
     <label>Password <input type="password" name="password" minlength="8" required><span class="hint">At least 8 characters.</span></label>
-    <label>Major <span class="hint">optional</span><input name="major" value="<%= form.major || '' %>" maxlength="80" placeholder="Computer Science"></label>
+    <label>What you do <span class="hint">optional</span><input name="headline" value="<%= form.headline || '' %>" maxlength="80" placeholder="Backend developer, CS student, hobbyist…"></label>
     <div class="two">
-      <label>Year
-        <select name="year"><option value="">—</option><% C.YEARS.forEach(function (y) { %><option <%= form.year === y ? 'selected' : '' %>><%= y %></option><% }) %></select>
+      <label>Experience level
+        <select name="level"><option value="">—</option><% C.LEVELS.forEach(function (y) { %><option <%= form.level === y ? 'selected' : '' %>><%= y %></option><% }) %></select>
       </label>
-      <label>Where you're based
-        <select name="location"><option value="">—</option><% C.AREAS.forEach(function (a) { %><option <%= form.location === a ? 'selected' : '' %>><%= a %></option><% }) %></select>
+      <label>City or area <span class="hint">optional</span>
+        <input name="location" value="<%= form.location || '' %>" maxlength="60" placeholder="Austin, TX">
       </label>
     </div>
     <button class="btn">Create account</button>

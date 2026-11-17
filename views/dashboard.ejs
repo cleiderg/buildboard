@@ -4,7 +4,7 @@
   <a class="btn" href="/projects/new">+ Post a project</a>
 </div>
 <% if (!user.skills || !user.location) { %>
-  <p class="flash ok">Finish <a href="/profile/edit">your profile</a> (skills and where you're based) to get project suggestions and see students near you.</p>
+  <p class="flash ok">Finish <a href="/profile/edit">your profile</a> (skills and where you're based) to get project suggestions and see people near you.</p>
 <% } %>
 
 <% if (reviewQueue.length) { %>
@@ -46,7 +46,7 @@
 <% } %>
 
 <% if (nearby.length) { %>
-  <h2>Students near you <span class="muted small-text"><%= user.location %></span></h2>
+  <h2>People near you <span class="muted small-text"><%= user.location %></span></h2>
   <div class="grid"><% nearby.forEach(function (person) { %><%- include('partials/person-card', { person: person }) %><% }) %></div>
   <p><a href="/people?near=1">See everyone nearby →</a></p>
 <% } %>

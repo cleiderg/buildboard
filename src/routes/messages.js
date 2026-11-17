@@ -1,4 +1,4 @@
-// Private one-to-one messages between students.
+// Private one-to-one messages between members.
 const express = require('express');
 const { get, all, run } = require('../db');
 const { requireLogin } = require('../auth');
@@ -26,7 +26,7 @@ router.get('/messages', requireLogin, (req, res) => {
 
 router.get('/messages/:uid', requireLogin, (req, res) => {
   const me = req.user;
-  const other = get('SELECT id, name, major, year FROM users WHERE id = ?', Number(req.params.uid) || 0);
+  const other = get('SELECT id, name, headline, level FROM users WHERE id = ?', Number(req.params.uid) || 0);
   if (!other || other.id === me.id) return res.redirect('/messages');
   const marked = run('UPDATE messages SET read_at = ? WHERE sender_id = ? AND recipient_id = ? AND read_at IS NULL', Date.now(), other.id, me.id);
   res.locals.unreadMessages = Math.max(0, res.locals.unreadMessages - Number(marked.changes));

@@ -1,7 +1,7 @@
 {
-  "name": "zotboard",
+  "name": "buildboard",
   "version": "1.0.0",
-  "description": "A project message board for UCI students: post project ideas, find teammates, and meet up to build together.",
+  "description": "A message board for technical projects: post an idea, find teammates, and meet up to build together.",
   "main": "server.js",
   "private": true,
   "engines": {

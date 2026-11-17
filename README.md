@@ -1,14 +1,12 @@
-# ZotBoard
+# BuildBoard
 
-A project message board for UCI students. Post a project idea, find people to build it with, or browse projects that inspire you and join one. Then schedule a meetup with teammates nearby and actually work on it together.
-
-> Student-built. Not affiliated with or endorsed by the University of California, Irvine.
+A message board for anyone who wants to work on technical projects. Post a project idea, find people to build it with, or browse projects that inspire you and join one. Then schedule a meetup with teammates nearby and actually work on it together.
 
 ## What you can do
 
 **Post and find projects**
-- Post a project with a description, category, stage, the skills and roles you need, time commitment, team size, and where the team will meet.
-- Browse and search projects by keyword, category, skill, stage, in-person/hybrid/remote, and campus area. A "Near me" filter shows projects based in your area.
+- Post a project with a description, category, stage, the skills and roles you need, time commitment, team size, and the city or area where the team meets.
+- Browse and search projects by keyword, category, skill, stage, in-person/hybrid/remote, and city or area. A "Near me" filter shows projects based in your area.
 - Save projects for later.
 
 **Build a team**
@@ -17,19 +15,19 @@ A project message board for UCI students. Post a project idea, find people to bu
 - Every project has a public discussion thread and a private team chat that only members can see.
 
 **Meet up**
-- Team members schedule meetups (what, when, where on campus) and everyone RSVPs Going / Maybe / Can't go.
-- A meetup can be marked "open to anyone" so interested students can drop in. Open meetups are listed on the Meetups page.
+- Team members schedule meetups (what, when, where) and everyone RSVPs Going / Maybe / Can't go.
+- A meetup can be marked "open to anyone" so anyone interested can drop in. Open meetups are listed on the Meetups page.
 
 **Find people**
-- Each student has a profile: major, year, skills, interests, where they are based, and when they are free.
-- The People directory is searchable by name, skill, year and area, and lists students in your area first.
-- Send private messages to any student.
+- Each member has a profile: what they do, experience level, skills, interests, city or area, and when they are free.
+- The People directory is searchable by name, skill, experience level and area, and lists people in your area first.
+- Send private messages to any member.
 
 **Stay on top of things**
-- A dashboard shows your projects, join requests waiting on you, upcoming meetups, projects that need your skills, students near you, and saved projects.
+- A dashboard shows your projects, join requests waiting on you, upcoming meetups, projects that need your skills, people near you, and saved projects.
 - Notifications for join requests, decisions, comments, team chat and meetups.
 
-Sign-up is limited to `@uci.edu` email addresses.
+Anyone can sign up with an email address and a password.
 
 ## Run it locally
 
@@ -43,7 +41,7 @@ npm start
 
 Then open http://localhost:3000.
 
-`npm run seed` is optional. It fills an empty database with demo students, projects and meetups so the site is not blank. Every demo account uses the password `anteater123`, for example `maya.demo@uci.edu`.
+`npm run seed` is optional. It fills an empty database with demo members, projects and meetups so the site is not blank. Every demo account uses the password `buildboard123`, for example `maya@demo.example`.
 
 Use `npm run dev` to restart the server automatically when files change.
 
@@ -59,7 +57,6 @@ All optional, set as environment variables:
 | `DB_PATH` | `data/board.db` | Where the SQLite database file lives |
 | `NODE_ENV` | | Set to `production` to mark cookies as HTTPS-only |
 | `TRUST_PROXY` | | Set to `1` when running behind a reverse proxy (Render, Fly, nginx) |
-| `TZ` | `America/Los_Angeles` | Time zone used for meetup times |
 
 ## How it is built
 
@@ -72,21 +69,21 @@ server.js            App setup and middleware
 src/
   db.js              Database schema and query helpers
   auth.js            Password hashing, sessions, CSRF protection, login rate limit
-  constants.js       Categories, campus areas, and other option lists
+  constants.js       Categories, experience levels, and other option lists
   helpers.js         Input cleaning and formatting helpers
   queries.js         Shared SQL
   routes/
     account.js       Home, sign up, log in, dashboard, notifications, your profile
     projects.js      Browse, post, edit, join requests, team, discussion, bookmarks
     meetups.js       Scheduling and RSVPs
-    people.js        Student directory and profiles
+    people.js        Member directory and profiles
     messages.js      Private messages
 views/               EJS page templates
 public/              Stylesheet and a small script
 scripts/seed.js      Demo data
 ```
 
-To change the list of categories, campus areas or suggested meetup spots, edit `src/constants.js`.
+To change the list of categories, experience levels or suggested meetup spots, edit `src/constants.js`.
 
 ### Security
 
@@ -98,11 +95,13 @@ To change the list of categories, campus areas or suggested meetup spots, edit `
 
 ## Known limits
 
-- **Emails are not verified.** Sign-up checks that the address ends in `@uci.edu` but does not send a confirmation email, so someone could sign up with a UCI address they do not own. Before opening this to real students, add email verification (or UCI single sign-on).
+- **Emails are not verified.** Sign-up does not send a confirmation email, so someone could sign up with an address they do not own. Add email verification before opening this to the public.
 - No password reset by email yet, for the same reason.
 - No reporting or moderation tools, and no image uploads.
 - Messages and notifications appear when you load a page; nothing updates live.
-- SQLite keeps everything in one file on one server. That is plenty for a campus, but the host needs a persistent disk.
+- Locations are free text. "Near me" matches people and projects whose city or area is written the same way as yours (ignoring capitals), so "Austin, TX" and "Austin" do not match.
+- Meetup times are shown exactly as entered, with no time-zone conversion.
+- SQLite keeps everything in one file on one server. That is plenty to start with, but the host needs a persistent disk.
 
 ## Putting it online
 

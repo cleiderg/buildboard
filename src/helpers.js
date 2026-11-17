@@ -87,4 +87,8 @@ function safeLink(value) {
   }
 }
 
-module.exports = { clean, pick, clampInt, tags, tagList, escLike, timeAgo, nowLocal, fmtWhen, initials, qs, safeLink };
+/** True when two free-text locations are the same place (ignoring case and spacing). */
+const normArea = (s) => String(s || '').trim().toLowerCase().replace(/\s+/g, ' ');
+const sameArea = (a, b) => !!normArea(a) && normArea(a) === normArea(b);
+
+module.exports = { sameArea, clean, pick, clampInt, tags, tagList, escLike, timeAgo, nowLocal, fmtWhen, initials, qs, safeLink };

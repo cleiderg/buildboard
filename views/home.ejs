@@ -1,18 +1,18 @@
 <%- include('partials/head') %>
 <section class="hero">
-  <h1>Got a project idea? Find Anteaters to build it with.</h1>
-  <p>Post what you want to make, find students with the skills you're missing, or join a project that inspires you. Then meet up on campus and actually build it.</p>
+  <h1>Got a project idea? Find people to build it with.</h1>
+  <p>Post what you want to build, find people with the skills you're missing, or join a technical project that inspires you. Then meet up nearby and actually build it.</p>
   <div class="row center">
-    <a class="btn big" href="/signup">Sign up with your UCI email</a>
+    <a class="btn big" href="/signup">Sign up free</a>
     <a class="btn big ghost" href="/projects">Browse projects</a>
   </div>
-  <p class="muted small-text"><%= stats.projects %> open project<%= stats.projects === 1 ? '' : 's' %> · <%= stats.students %> student<%= stats.students === 1 ? '' : 's' %></p>
+  <p class="muted small-text"><%= stats.projects %> open project<%= stats.projects === 1 ? '' : 's' %> · <%= stats.members %> member<%= stats.members === 1 ? '' : 's' %></p>
 </section>
 
 <section class="steps">
   <div class="card"><h3>1. Post or browse</h3><p class="muted">Share an idea and the skills you need, or search projects by topic, skill and where the team meets.</p></div>
   <div class="card"><h3>2. Team up</h3><p class="muted">Ask to join with a short note. Owners review requests and build their team.</p></div>
-  <div class="card"><h3>3. Meet and build</h3><p class="muted">Schedule meetups at the library, Student Center or anywhere nearby, and RSVP so everyone shows up.</p></div>
+  <div class="card"><h3>3. Meet and build</h3><p class="muted">Schedule meetups at a coffee shop, library, makerspace or online, and RSVP so everyone shows up.</p></div>
 </section>
 
 <% if (recent.length) { %>

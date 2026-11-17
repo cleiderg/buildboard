@@ -101,7 +101,7 @@ function csrfProtect(req, res, next) {
 
 function requireLogin(req, res, next) {
   if (req.user) return next();
-  req.flash('error', 'Log in with your UCI email to do that.');
+  req.flash('error', 'Log in to do that.');
   const nextUrl = req.method === 'GET' ? '?next=' + encodeURIComponent(req.originalUrl) : '';
   res.redirect('/login' + nextUrl);
 }

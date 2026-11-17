@@ -11,8 +11,8 @@ const PROJECT_CARD = `
 const isMember = (projectId, userId) =>
   !!userId && !!get('SELECT 1 AS x FROM memberships WHERE project_id = ? AND user_id = ?', projectId, userId);
 
-// Meetups stay listed until two hours after they start.
-const upcomingCutoff = () => nowLocal(-2 * 60 * 60 * 1000);
+// Meetups stay listed for a while after they start (generous, since members can be in different time zones).
+const upcomingCutoff = () => nowLocal(-12 * 60 * 60 * 1000);
 
 /** Adds RSVP counts, the going list and the viewer's own RSVP to each meetup row. */
 function withRsvps(meetups, viewerId) {

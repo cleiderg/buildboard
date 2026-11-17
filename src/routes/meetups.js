@@ -7,7 +7,7 @@ const { isMember, upcomingCutoff, withRsvps } = require('../queries');
 
 const router = express.Router();
 
-// Upcoming meetups: yours first, then ones any student can drop in on.
+// Upcoming meetups: yours first, then ones anyone can drop in on.
 router.get('/meetups', requireLogin, (req, res) => {
   const me = req.user;
   const rows = withRsvps(
@@ -43,7 +43,7 @@ router.post('/projects/:id/meetups', requireLogin, (req, res) => {
 
   if (!title || !place) req.flash('error', 'A meetup needs a title and a place.');
   else if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(startsAt) || Number.isNaN(new Date(startsAt).getTime())) req.flash('error', 'Pick a date and time for the meetup.');
-  else if (startsAt < nowLocal()) req.flash('error', 'That time is in the past.');
+  else if (startsAt < nowLocal(-24 * 60 * 60 * 1000)) req.flash('error', 'That time is in the past.');
   else {
     const info = run(
       'INSERT INTO meetups (project_id, creator_id, title, place, starts_at, notes, open_to_all, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',

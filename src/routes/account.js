@@ -7,7 +7,7 @@ const { clean, pick, tags, tagList, safeLink } = require('../helpers');
 const { PROJECT_CARD, upcomingCutoff, withRsvps } = require('../queries');
 
 const router = express.Router();
-const EMAIL_RE = new RegExp(`^[a-z0-9._%+-]+@${C.EMAIL_DOMAIN.replace('.', '\\.')}$`);
+const EMAIL_RE = /^[a-z0-9._%+-]+@[a-z0-9-]+(\.[a-z0-9-]+)+$/;
 
 const safeNext = (v) => (typeof v === 'string' && /^\/(?![/\\])/.test(v) ? v : '/dashboard');
 
@@ -16,7 +16,7 @@ router.get('/', (req, res) => {
   const recent = all(`${PROJECT_CARD} WHERE p.status = 'open' ORDER BY p.created_at DESC LIMIT 6`);
   const stats = {
     projects: get("SELECT COUNT(*) AS n FROM projects WHERE status = 'open'").n,
-    students: get('SELECT COUNT(*) AS n FROM users').n,
+    members: get('SELECT COUNT(*) AS n FROM users').n,
   };
   res.render('home', { title: 'Find your project team', recent, stats });
 });
@@ -32,21 +32,21 @@ router.post('/signup', (req, res) => {
   const form = {
     name: clean(req.body.name, 60),
     email: clean(req.body.email, 120).toLowerCase(),
-    major: clean(req.body.major, 80),
-    year: pick(req.body.year, C.YEARS, ''),
-    location: pick(req.body.location, C.AREAS, ''),
+    headline: clean(req.body.headline, 80),
+    level: pick(req.body.level, C.LEVELS, ''),
+    location: clean(req.body.location, 60).replace(/\s+/g, ' '),
   };
   const password = String(req.body.password || '');
   let error = null;
   if (form.name.length < 2) error = 'Please enter your name.';
-  else if (!EMAIL_RE.test(form.email)) error = `Use your @${C.EMAIL_DOMAIN} email address.`;
+  else if (!EMAIL_RE.test(form.email)) error = 'Enter a valid email address.';
   else if (password.length < 8 || password.length > 200) error = 'Your password needs at least 8 characters.';
   else if (get('SELECT 1 AS x FROM users WHERE email = ?', form.email)) error = 'An account with that email already exists. Try logging in.';
   if (error) return res.status(400).render('signup', { title: 'Sign up', error, form });
 
   const info = run(
-    'INSERT INTO users (email, password_hash, name, major, year, location, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)',
-    form.email, auth.hashPassword(password), form.name, form.major, form.year, form.location, Date.now()
+    'INSERT INTO users (email, password_hash, name, headline, level, location, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)',
+    form.email, auth.hashPassword(password), form.name, form.headline, form.level, form.location, Date.now()
   );
   auth.startSession(res, Number(info.lastInsertRowid));
   req.flash('ok', 'Welcome! Add your skills and interests so teams can find you.');
@@ -81,7 +81,7 @@ router.post('/logout', (req, res) => {
 router.get('/dashboard', auth.requireLogin, (req, res) => {
   const me = req.user;
   const reviewQueue = all(
-    `SELECT r.id, r.message, r.created_at, r.project_id, p.title, u.id AS user_id, u.name, u.major, u.year, u.skills
+    `SELECT r.id, r.message, r.created_at, r.project_id, p.title, u.id AS user_id, u.name, u.headline, u.level, u.skills
      FROM join_requests r JOIN projects p ON p.id = r.project_id JOIN users u ON u.id = r.user_id
      WHERE p.owner_id = ? AND r.status = 'pending' ORDER BY r.created_at`,
     me.id
@@ -111,10 +111,10 @@ router.get('/dashboard', auth.requireLogin, (req, res) => {
     me.id
   );
   const nearby = me.location
-    ? all('SELECT id, name, major, year, skills, location FROM users WHERE location = ? AND id != ? ORDER BY created_at DESC LIMIT 6', me.location, me.id)
+    ? all('SELECT id, name, headline, level, skills, location FROM users WHERE lower(location) = lower(?) AND id != ? ORDER BY created_at DESC LIMIT 6', me.location, me.id)
     : [];
 
-  // Suggest open projects that need skills this student has.
+  // Suggest open projects that need skills this person has.
   const mySkills = new Set(tagList(me.skills));
   let suggested = [];
   if (mySkills.size) {
@@ -152,9 +152,9 @@ router.get('/profile/edit', auth.requireLogin, (req, res) => {
 router.post('/profile', auth.requireLogin, (req, res) => {
   const form = {
     name: clean(req.body.name, 60),
-    major: clean(req.body.major, 80),
-    year: pick(req.body.year, C.YEARS, ''),
-    location: pick(req.body.location, C.AREAS, ''),
+    headline: clean(req.body.headline, 80),
+    level: pick(req.body.level, C.LEVELS, ''),
+    location: clean(req.body.location, 60).replace(/\s+/g, ' '),
     bio: clean(req.body.bio, 1000),
     skills: tags(req.body.skills),
     interests: tags(req.body.interests),
@@ -165,8 +165,8 @@ router.post('/profile', auth.requireLogin, (req, res) => {
     return res.status(400).render('profile-edit', { title: 'Edit profile', error: 'Please enter your name.', form });
   }
   run(
-    `UPDATE users SET name = ?, major = ?, year = ?, location = ?, bio = ?, skills = ?, interests = ?, availability = ?, link = ? WHERE id = ?`,
-    form.name, form.major, form.year, form.location, form.bio, form.skills, form.interests, form.availability, form.link, req.user.id
+    `UPDATE users SET name = ?, headline = ?, level = ?, location = ?, bio = ?, skills = ?, interests = ?, availability = ?, link = ? WHERE id = ?`,
+    form.name, form.headline, form.level, form.location, form.bio, form.skills, form.interests, form.availability, form.link, req.user.id
   );
   req.flash('ok', 'Profile saved.');
   res.redirect('/people/' + req.user.id);

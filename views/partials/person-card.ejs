@@ -3,11 +3,11 @@
     <span class="avatar"><%= h.initials(person.name) %></span>
     <div>
       <h3><%= person.name %></h3>
-      <div class="muted small-text"><%= [person.major, person.year].filter(Boolean).join(' · ') || 'UCI student' %></div>
+      <div class="muted small-text"><%= [person.headline, person.level].filter(Boolean).join(' · ') || 'Member' %></div>
     </div>
   </div>
   <% if (person.location) { %>
-    <div class="small-text"><%= person.location %><% if (user && user.location && user.location === person.location) { %> <span class="pill green">Near you</span><% } %></div>
+    <div class="small-text"><%= person.location %><% if (user && h.sameArea(user.location, person.location)) { %> <span class="pill green">Near you</span><% } %></div>
   <% } %>
   <% if (person.skills) { %>
     <div class="tags"><% h.tagList(person.skills).slice(0, 6).forEach(function (t) { %><span class="tag"><%= t %></span><% }) %></div>

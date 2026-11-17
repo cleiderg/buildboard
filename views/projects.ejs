@@ -10,7 +10,7 @@
   <input name="skill" value="<%= f.skill %>" placeholder="Skill needed, e.g. python" aria-label="Skill needed">
   <select name="mode" aria-label="How the team works"><option value="">In person or remote</option><% C.WORK_MODES.forEach(function (c) { %><option <%= f.mode === c ? 'selected' : '' %>><%= c %></option><% }) %></select>
   <select name="stage" aria-label="Stage"><option value="">Any stage</option><% C.STAGES.forEach(function (c) { %><option <%= f.stage === c ? 'selected' : '' %>><%= c %></option><% }) %></select>
-  <select name="location" aria-label="Where the team meets"><option value="">Any area</option><% C.AREAS.forEach(function (c) { %><option <%= f.location === c ? 'selected' : '' %>><%= c %></option><% }) %></select>
+  <input name="location" value="<%= f.location %>" placeholder="City or area" aria-label="City or area">
   <select name="sort" aria-label="Sort"><option value="">Newest first</option><option value="active" <%= f.sort === 'active' ? 'selected' : '' %>>Recently active</option></select>
   <% if (user && user.location) { %><label class="check"><input type="checkbox" name="near" value="1" <%= f.near ? 'checked' : '' %>> Near me</label><% } %>
   <label class="check"><input type="checkbox" name="status" value="all" <%= f.status === 'all' ? 'checked' : '' %>> Include closed</label>
